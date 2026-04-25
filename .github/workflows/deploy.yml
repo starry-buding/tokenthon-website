@@ -18,9 +18,15 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
+          debug: true
+          script_stop: true
+          command_timeout: 20m
           script: |
             set -e
             set -x
+            echo "[deploy] connected to server"
+            echo "[deploy] user=$(whoami) host=$(hostname)"
+            echo "[deploy] path=${{ secrets.DEPLOY_PATH }}"
             export NVM_DIR="$HOME/.nvm"
             if [ -s "$NVM_DIR/nvm.sh" ]; then
               . "$NVM_DIR/nvm.sh"
@@ -31,6 +37,8 @@ jobs:
             npm -v || true
 
             cd "${{ secrets.DEPLOY_PATH }}"
+            pwd
+            ls -la
             git fetch origin main
             git reset --hard origin/main
             # Prefer reproducible install. Fall back if lockfile is missing.
